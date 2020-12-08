@@ -1,0 +1,65 @@
+
+import cv2
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd="C:/Program Files/Tesseract-OCR/tesseract.exe"
+
+# ---Image---
+
+# Image 01
+Image=cv2.imread("C:\\Users\\Nashit\\Desktop\\Intern\\Task01\\OCR\\Image01.jpg")
+
+# # Image 02
+#Image=cv2.imread("C:\\Users\\Nashit\\Desktop\\Intern\\Task01\\OCR\\Image02.jpg")
+
+# # HandWriting
+# Image=cv2.imread("C:\\Users\\Nashit\\Desktop\\Intern\\Task01\\OCR\\HandWrite.jpg")
+# Image=cv2.resize(Image,(900,700))
+#
+
+Image=cv2.cvtColor(Image,cv2.COLOR_BGR2RGB)
+
+HightImage,WidthImage,_=Image.shape
+ditectDataBox=pytesseract.image_to_data(Image)
+
+print(pytesseract.image_to_string(Image))
+
+for a,b in enumerate(ditectDataBox.splitlines()):
+    if a!=0:
+        b=b.split()
+        if len(b)==12:
+            x,y,w,h=int(b[6]),int(b[7]),int(b[8]),int(b[9])
+            cv2.rectangle(Image, (x, y), (x + w, y + h), (0, 0, 255), 1)
+            cv2.rectangle(Image,(x,y-17),(x+w,y),(0,0,255),cv2.FILLED)
+            cv2.putText(Image,b[11],(x,y-5),cv2.FONT_HERSHEY_COMPLEX,0.5,(0,0,0))
+
+cv2.imshow("Output Image",Image)
+cv2.waitKey(0)
+
+
+
+# ---Video----
+
+# cap=cv2.VideoCapture(1)
+#
+# while True:
+#     success,Image=cap.read()
+#     Image1=cv2.cvtColor(Image,cv2.COLOR_BGR2RGB)
+#
+#     HightImage, WidthImage, _ = Image1.shape
+#     ditectDataBox=pytesseract.image_to_data(Image1)
+#
+#     for a,b in enumerate(ditectDataBox.splitlines()):
+#         if a!=0:
+#             b=b.split()
+#             if len(b)==12:
+#                 x,y,w,h=int(b[6]),int(b[7]),int(b[8]),int(b[9])
+#                 cv2.rectangle(Image1, (x, y), (x + w, y + h), (0, 0, 255), 1)
+#                 cv2.rectangle(Image1,(x,y-17),(x+w,y),(0,0,255),cv2.FILLED)
+#                 cv2.putText(Image1,b[11],(x,y-5),cv2.FONT_HERSHEY_COMPLEX,0.5,(0,0,0))
+#
+#     cv2.imshow("Output Video",Image1)
+#     if cv2.waitKey(1) and 0xFF==ord('q'):
+#         break
+
+
