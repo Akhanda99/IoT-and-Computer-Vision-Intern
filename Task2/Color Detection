@@ -1,0 +1,57 @@
+import cv2
+import pandas as pd
+
+#img1
+# img=cv2.imread("C:\\Users\\Nashit\\Desktop\\Intern\\Task01\\Color Detection\\img1.jpg")
+# img=cv2.resize(img,(1000,600))
+
+#img 02
+img=cv2.imread("C:\\Users\\Nashit\\Desktop\\Intern\\Task01\\Color Detection\\img2.jpg")
+img=cv2.resize(img,(600,600))
+
+index=['color','color_name','hex value','R','G','B']
+infoSource=pd.read_csv("C:\\Users\\Nashit\\Desktop\\Intern\\Task01\\Color Detection\\ColorList.csv",names=index,header=None)
+
+clicked=False
+b = g = r = xpos = ypos = 0
+
+def colorname(R,G,B):
+    global nameOFColor
+    minival=1000
+    for i in range(len(infoSource)):
+        diff=abs(R-int(infoSource.loc[i,'R']))+abs(G-int(infoSource.loc[i,'G']))+abs(B-int(infoSource.loc[i,'B']))
+        if diff<=minival:
+            minival=diff
+            nameOFColor=infoSource.loc[i,'color_name']
+    return nameOFColor
+
+
+def mouseClickEvent(event, x, y, flags, params):
+    if event == cv2.EVENT_LBUTTONDBLCLK:
+        global b, g, r, xpos, ypos, clicked
+        clicked = True
+        xpos = x
+        ypos = y
+        b,g,r = img[y,x]
+        b = int(b)
+        g = int(g)
+        r = int(r)
+
+while True:
+    cv2.imshow('Image', img)
+    cv2.setMouseCallback("Image", mouseClickEvent)
+
+    if clicked == True:
+        cv2.rectangle(img, (20,20), (340, 40), (b, g, r), -1)
+        cv2.rectangle(img, (20,40), (340, 80), (b, g, r), 1)
+
+        cv2.rectangle(img, (22, 42), (337, 78), (255,255,255), -1)
+        cv2.putText(img," Color Name"+"           "+"RGB Value",(24,35),cv2.FONT_HERSHEY_COMPLEX,0.5,(255,255,255),1)
+        if r+g+b>=500:
+            cv2.putText(img, " Color Name" + "           " + "RGB Value", (24, 35), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0,0,0), 1)
+
+        cv2.putText(img, colorname(r,g,b), (28, 66), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1)
+        cv2.putText(img, '('+str(r)+","+str(g)+","+str(b)+")", (217, 66), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
